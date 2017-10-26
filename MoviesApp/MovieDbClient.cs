@@ -37,13 +37,26 @@ namespace MoviesApp
         /// </summary>
         /// <returns></returns>
         public async Task<IEnumerable<Movie>> GetMovies()
-        {                           
+        {
             //get running movies
+            byte searchPage = 1;
+            IEnumerable<Movie> movies = new List<Movie>();
+            MoviesCollection result;
             var serializer = new DataContractJsonSerializer(typeof(MoviesCollection));
-            var streamTask = client.GetStreamAsync(string.Concat(apiUrl, string.Format(apiGetRunningMethod, apiKey)));
-            MoviesCollection movies = serializer.ReadObject(await streamTask) as MoviesCollection;           
 
-            return movies?.Items;
+            do
+            {
+                var streamTask = client.GetStreamAsync(string.Concat(apiUrl, string.Format(apiGetRunningMethod, apiKey, searchPage)));
+                result = serializer.ReadObject(await streamTask) as MoviesCollection;
+
+                movies = movies.Union(result.Items);
+
+                searchPage++;
+            }
+            while (searchPage <= result.TotalPages);
+                                 
+           
+            return movies;
         }
 
         /// <summary>

@@ -118,5 +118,8 @@ namespace MoviesApp
     {
         [DataMember(Name = "results")]
         public IEnumerable<Movie> Items { get; set; }
+
+        [DataMember(Name = "total_pages")]
+        public byte TotalPages { get; set; }
     }
 }
